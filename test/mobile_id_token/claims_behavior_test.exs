@@ -60,7 +60,25 @@ defmodule MobileIdToken.ClaimsBehaviorTest do
              MobileIdToken.verify(:google, token, client_ids: ["google-aud-1"])
   end
 
-  test "google accepts multi-audience token when azp is trusted and in aud list" do
+  test "google accepts single-audience token when azp is trusted and differs from aud" do
+    {token, jwk_map} =
+      TokenHelpers.build_id_token(%{
+        iss: "https://accounts.google.com",
+        aud: "google-web-client",
+        azp: "google-android-client",
+        email: "user@example.com",
+        sub: "google-aud-string-azp-different"
+      })
+
+    TokenHelpers.put_jwks_cache(:google, [jwk_map])
+
+    assert {:ok, _claims} =
+             MobileIdToken.verify(:google, token,
+               client_ids: ["google-web-client", "google-android-client"]
+             )
+  end
+
+  test "google accepts multi-audience token when azp is trusted" do
     claims = %{
       "iss" => "https://accounts.google.com",
       "aud" => ["google-aud-1", "google-aud-2"],
@@ -83,7 +101,25 @@ defmodule MobileIdToken.ClaimsBehaviorTest do
              MobileIdToken.verify(:google, token, client_ids: ["google-aud-1", "google-aud-2"])
   end
 
-  test "google rejects multi-audience token when azp is untrusted or outside aud list" do
+  test "google accepts multi-audience token when azp is trusted but outside aud list" do
+    {token, jwk_map} =
+      TokenHelpers.build_id_token(%{
+        iss: "https://accounts.google.com",
+        aud: ["google-aud-1", "google-aud-2"],
+        azp: "google-azp-client",
+        email: "user@example.com",
+        sub: "google-aud-azp-outside-aud"
+      })
+
+    TokenHelpers.put_jwks_cache(:google, [jwk_map])
+
+    assert {:ok, _claims} =
+             MobileIdToken.verify(:google, token,
+               client_ids: ["google-aud-1", "google-aud-2", "google-azp-client"]
+             )
+  end
+
+  test "google rejects multi-audience token when azp is untrusted" do
     claims_variants = [
       %{
         "iss" => "https://accounts.google.com",

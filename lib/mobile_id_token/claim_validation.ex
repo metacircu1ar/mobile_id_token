@@ -23,7 +23,7 @@ defmodule MobileIdToken.ClaimValidation do
 
   def audience_allowed?(aud, allowed_audiences, azp)
       when is_binary(aud) and is_list(allowed_audiences) do
-    aud in allowed_audiences and azp_allowed?(azp, allowed_audiences, [aud])
+    aud in allowed_audiences and azp_allowed?(azp, allowed_audiences)
   end
 
   def audience_allowed?(audiences, allowed_audiences, azp)
@@ -39,7 +39,7 @@ defmodule MobileIdToken.ClaimValidation do
         false
 
       true ->
-        azp_allowed?(azp, allowed_audiences, audiences)
+        azp_allowed?(azp, allowed_audiences)
     end
   end
 
@@ -57,13 +57,13 @@ defmodule MobileIdToken.ClaimValidation do
   def email_verified_truthy?("true"), do: true
   def email_verified_truthy?(_value), do: false
 
-  defp azp_allowed?(nil, _allowed_audiences, _audiences), do: true
+  defp azp_allowed?(nil, _allowed_audiences), do: true
 
-  defp azp_allowed?(azp, allowed_audiences, audiences)
-       when is_binary(azp) and is_list(allowed_audiences) and is_list(audiences) do
+  defp azp_allowed?(azp, allowed_audiences)
+       when is_binary(azp) and is_list(allowed_audiences) do
     trimmed_azp = String.trim(azp)
-    trimmed_azp != "" and trimmed_azp in allowed_audiences and trimmed_azp in audiences
+    trimmed_azp != "" and trimmed_azp in allowed_audiences
   end
 
-  defp azp_allowed?(_azp, _allowed_audiences, _audiences), do: false
+  defp azp_allowed?(_azp, _allowed_audiences), do: false
 end

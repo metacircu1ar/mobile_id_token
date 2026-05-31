@@ -23,6 +23,7 @@ defmodule MobileIdToken.TestSupport.TokenHelpers do
         "exp" => exp,
         "sub" => Map.fetch!(opts, :sub)
       }
+      |> maybe_put_claim("azp", Map.get(opts, :azp))
       |> maybe_put_claim("nonce", Map.get(opts, :nonce, oauth_nonce()))
       |> maybe_put_claim("email", Map.get(opts, :email))
       |> maybe_put_claim("name", Map.get(opts, :name, "Test User"))

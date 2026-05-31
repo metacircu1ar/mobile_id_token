@@ -135,7 +135,7 @@ Audience validation behavior:
 
 - `aud` string: must be one of the configured `:client_ids`.
 - `aud` list: every audience in the token must be trusted (no extra untrusted values).
-- If `azp` is present, it must be a trusted client ID and one of the token audiences.
+- If `azp` is present, it must be a trusted client ID.
 
 Provider-specific nonce behavior:
 
@@ -222,9 +222,9 @@ Apple:
 
 If a token's `aud` claim is an array, **every** value must be in `:client_ids`. This matches the OIDC Core §3.1.3.7 requirement to reject tokens that list audiences the client does not trust — not just tokens that omit the client's own ID.
 
-When the `azp` (authorized party) claim is present, it must also be in `:client_ids` **and** appear in the `aud` array.
+When the `azp` (authorized party) claim is present, it must also be in `:client_ids`. It does not need to appear in the token's `aud` value.
 
-In typical mobile sign-in flows `aud` is a single string (the app's bundle ID or OAuth client ID), so this rarely matters in practice. The strict behavior is a defense-in-depth measure against cross-application token replay in less common multi-audience flows.
+In typical mobile sign-in flows `aud` is a single string (the app's bundle ID or OAuth client ID), while `azp` may identify another trusted client in the same app family.
 
 ## Security Notes
 

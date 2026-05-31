@@ -4,6 +4,13 @@ All notable changes to `mobile_id_token` will be documented in this file.
 
 The format is based on Keep a Changelog.
 
+## [0.1.1] - 2026-06-01
+
+### Fixed
+
+- Relax `azp` validation so trusted authorized parties no longer have to appear in the token `aud` value.
+- Align Google/OIDC audience handling for tokens where `aud` and `azp` are different trusted client IDs.
+
 ## [0.1.0] - 2026-05-25
 
 Initial release.
